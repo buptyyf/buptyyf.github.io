@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>yyf WebGL No.1</title>
+        <style>
+            body { margin: 0; }
+            
+        </style>
+        <script src="../public/js/three.min.js"></script>
+    </head>
+    <body>
+        <script>
+            //创建一个场景
+            var scene = new THREE.Scene();
+            //创建一个正交照相机
+            var camera = new THREE.OrthographicCamera( -10, 10, 7, -7, 0.1, 1000 );
+            var renderer = new THREE.WebGLRenderer({
+                antialias: true,   //  开启消除锯齿,默认false
+                precision: "highp"   // 渲染精度  highp/mediump/lowp
+            });
+            //设置宽高和背景色
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            renderer.setClearColor("#c9f2f2");
+            //插入body
+            document.body.appendChild( renderer.domElement );
+
+
+            var bodyCube = new THREE.Mesh(new THREE.CubeGeometry(3, 1.5, 3),
+                new THREE.MeshLambertMaterial({color: '#fedd00',
+                    wireframe: false,}) );
+            //把车主体加入场景
+            scene.add(bodyCube);
+
+            var frontCube = new THREE.Mesh(new THREE.CubeGeometry(1.5, 0.8, 3),
+                new THREE.MeshLambertMaterial({color: '#c3c3c3',
+                    wireframe: false,}) );
+            frontCube.position.set(-2.25, -0.35, 0);
+            scene.add(frontCube);
+            var tailCube = new THREE.Mesh(new THREE.CubeGeometry(2.5, 0.8, 3),
+                new THREE.MeshLambertMaterial({color: '#c3c3c3',
+                    wireframe: false,}) );
+            tailCube.position.set(2.75, -0.35, 0);
+            scene.add(tailCube);
+            //创建四个轮子
+            let wheels = [];
+            for(let i = 0; i < 4; i++) {
+                let wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.2),
+                                new THREE.MeshLambertMaterial({color: '#000',
+                                    wireframe: false,}) );
+                wheel.rotation.set(- Math.PI / 2, 0, 0);
+                wheels.push(wheel);
+            }
+            wheels[0].position.set(2, -0.6, 1.4);
+            wheels[1].position.set(-1, -0.6, 1.4);
+            wheels[2].position.set(-1, -0.6, -1.4);
+            wheels[3].position.set(2, -0.6, -1.4);
+            
+            scene.add(wheels[0], wheels[1], wheels[2], wheels[3]);
+            
+            //加入平行光，是的模型更加立体
+            var light = new THREE.DirectionalLight();
+            light.position.set(2, 5, 3);
+            scene.add(light);
+
+            //设置照相机位置，以及看得方向
+            camera.position.set(2, 2, 4);
+            camera.lookAt(new THREE.Vector3(0, 0, 0));
+			
+            
+            renderer.render(scene, camera);
+
+        </script>
+    </body>
+</html>
