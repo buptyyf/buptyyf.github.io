@@ -41,21 +41,21 @@
             }
             
             function createCube() {
-                bodyCube = new THREE.Mesh(new THREE.CubeGeometry(3, 2, 3),
+                bodyCube = new THREE.Mesh(new THREE.CubeGeometry(3, 3, 3),
                             new THREE.MeshLambertMaterial({color: '#fedd00',
                                 wireframe: false,}) );
                 scene.add(bodyCube);
 
-                frontCube = new THREE.Mesh(new THREE.CubeGeometry(1.5, 1, 3),
+                frontCube = new THREE.Mesh(new THREE.CubeGeometry(1.5, 1.5, 3),
                     new THREE.MeshLambertMaterial({color: '#fedd00',
                         wireframe: false,}) );
-                frontCube.position.set(-2.25, -0.5, 0);
+                frontCube.position.set(-2.25, -0.75, 0);
                 scene.add(frontCube);
 
-                tailCube = new THREE.Mesh(new THREE.CubeGeometry(2.5, 1, 3),
+                tailCube = new THREE.Mesh(new THREE.CubeGeometry(2.5, 1.5, 3),
                     new THREE.MeshLambertMaterial({color: '#fedd00',
                         wireframe: false,}) );
-                tailCube.position.set(2.75, -0.5, 0);
+                tailCube.position.set(2.75, -0.75, 0);
                 scene.add(tailCube);
 
                 //创建四个轮子
@@ -67,10 +67,10 @@
                     wheel.rotation.set(-Math.PI / 2, 0, 0);
                     wheels.push(wheel);
                 }
-                wheels[0].position.set(2, -1, 1.4);
-                wheels[1].position.set(-1, -1, 1.4);
-                wheels[2].position.set(-1, -1, -1.4);
-                wheels[3].position.set(2, -1, -1.4);
+                wheels[0].position.set(2, -1.5, 1.4);
+                wheels[1].position.set(-1, -1.5, 1.4);
+                wheels[2].position.set(-1, -1.5, -1.4);
+                wheels[3].position.set(2, -1.5, -1.4);
                 scene.add(wheels[0], wheels[1], wheels[2], wheels[3]);
             }
 
@@ -120,7 +120,7 @@
                 let platform = new THREE.Mesh(new THREE.PlaneGeometry(20, 20),
                                     new THREE.MeshLambertMaterial({color: '#f2f2f2'}) );
                 platform.rotation.set(-Math.PI / 2, 0, 0);
-                platform.position.set(0, -2, 0);
+                platform.position.set(0, -3, 0);
                 platform.receiveShadow = true;
                 scene.add(platform)
             }
