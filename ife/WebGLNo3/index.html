@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>yyf WebGL No.3</title>
+        <style>
+            body { margin: 0; }
+            
+        </style>
+        <script src="./js/three.min.js"></script>
+    </head>
+    <body>
+        <script>
+            let scene, camera, renderer;
+            let bodyCube, frontCube, wheels, tailCube;
+            let light;
+
+            function init() {
+                //创建一个场景
+                scene = new THREE.Scene();
+                //创建一个正交照相机
+                camera = new THREE.OrthographicCamera( -10, 10, 20, -20, 0.1, 1000 );
+                //设置照相机位置，以及看得方向
+                camera.position.set(4, 6, 6);
+                camera.lookAt(new THREE.Vector3(0, 0, 0));
+                //创建一个透视照相机
+                //let camera = new THREE.PerspectiveCamera(45, 4 / 3, 1, 1000);
+                renderer = new THREE.WebGLRenderer({
+                    antialias: true,   //  开启消除锯齿,默认false
+                    precision: "highp"   // 渲染精度  highp/mediump/lowp
+                });
+                //设置宽高和背景色
+                renderer.setSize( window.innerWidth, window.innerHeight );
+                renderer.setClearColor("#c9f2f2");
+                //插入body
+                document.body.appendChild( renderer.domElement );
+
+                renderer.shadowMap.enabled = true;
+                //renderer.shadowMap.type = THREE.PCRSoftShadowMap;
+               
+            }
+            
+            function createCube() {
+                var loader = new THREE.TextureLoader();
+                var materials = [];
+                for (var i = 0; i < 6; ++i) {
+                    materials.push(new THREE.MeshPhongMaterial({
+                        map: loader.load('./assets/' + i + '.jpg', function(){
+                            renderer.render( scene, camera );
+                        }),
+                        specular: 0xff0000,
+                        shininess: 1000,
+                        color: '#fedd00'
+                    }));
+                }
+
+                bodyCube = new THREE.Mesh(new THREE.CubeGeometry(3, 3, 3),
+                                new THREE.MultiMaterial(materials));
+                scene.add(bodyCube);
+
+                frontCube = new THREE.Mesh(new THREE.CubeGeometry(1.5, 1.5, 3),
+                                new THREE.MultiMaterial(materials));
+                frontCube.position.set(-2.25, -0.75, 0);
+                scene.add(frontCube);
+
+                tailCube = new THREE.Mesh(new THREE.CubeGeometry(2.5, 1.5, 3),
+                                new THREE.MultiMaterial(materials));
+                tailCube.position.set(2.75, -0.75, 0);
+                scene.add(tailCube);
+
+                //创建四个轮子
+                wheels = [];
+                for(let i = 0; i < 4; i++) {
+                    let wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.2),
+                                    new THREE.MeshPhongMaterial({color: '#000',
+                                        specular: 0xff0000,
+                                        shininess: 10,
+                                        //color: 0xff0000,
+                                        }) );
+                    wheel.rotation.set(-Math.PI / 2, 0, 0);
+                    wheels.push(wheel);
+                }
+                wheels[0].position.set(2, -1.5, 1.4);
+                wheels[1].position.set(-1, -1.5, 1.4);
+                wheels[2].position.set(-1, -1.5, -1.4);
+                wheels[3].position.set(2, -1.5, -1.4);
+                scene.add(wheels[0], wheels[1], wheels[2], wheels[3]);
+                /*六个面加六张图*/
+                // var loader = new THREE.TextureLoader()
+                // var materials = [];
+                // for (var i = 0; i < 6; ++i) {
+                //     materials.push(new THREE.MeshPhongMaterial({
+                //         map: loader.load('./assets/' + i + '.jpg', function(){
+                //             renderer.render( scene, camera );
+                //         }),
+                //         specular: 0xff0000,
+                //         shininess: 1000,
+                //     }));
+                // }
+                // var cube = new THREE.Mesh(new THREE.CubeGeometry(3, 3, 3),
+                //     new THREE.MultiMaterial(materials));
+                // cube.position.set(4,3,0);
+                // console.log(cube)
+                // cube.castShadow = true;
+                // scene.add(cube);
+                /*六个面加同一张图*/
+                // let loader = new THREE.TextureLoader();
+                // let texture = loader.load("./assets/1.jpg",function(){renderer.render( scene, camera );})
+                // console.log(texture)
+                // let material = new THREE.MeshLambertMaterial({
+                //     map: texture,
+                // });
+                // console.log(material)
+                // let cube = new THREE.Mesh(new THREE.CubeGeometry(3, 3, 3),material);
+                // console.log(cube)
+                // cube.position.set(4,3,0);
+                // scene.add(cube)
+                // console.log(scene)
+
+            }
+
+            function addShadow() {
+                //加入属性变为可成阴影的物体
+                bodyCube.castShadow = true;
+                wheels.map(function(wheel) {
+                    wheel.castShadow = true;
+                })
+                tailCube.castShadow = true;
+                frontCube.castShadow = true;
+            }
+            
+
+            function addLight() {
+                //加入平行光，是的模型更加立体
+                light = new THREE.DirectionalLight( 0xffffff, 1);
+                // light = new THREE.PointLight();
+                light.position.set(3, 8, 10);
+                // light.target = bodyCube;
+                console.log(light.shadow.camera)
+                light.castShadow = true;
+                
+                light.shadow.mapSize.width = 512;  // default
+                light.shadow.mapSize.height = 512; // default
+                light.shadow.radius = 10
+                // light.shadow.camera.near = 0.5;       // default
+                // light.shadow.camera.far = 500      // default
+                // let helper = new THREE.DirectionalLightHelper( light, 1 );
+                // scene.add(helper)
+                console.log(light.shadow.camera)
+                scene.add(light);
+            }
+
+            // var light = new THREE.SpotLight(0xffffff, 1, 100, Math.PI / 6, 50);
+            // light.position.set(-3, 8, 5);
+            // console.log(light.target)
+            // light.target.children = [tailCube, bodyCube, frontCube, wheels[0], wheels[1], wheels[2], wheels[3]];
+            // light.castShadow = true;
+            // light.shadow.camera.near = 2;
+            // light.shadow.camera.far = 10;
+            // light.shadow.camera.fov = 30;
+            
+            // light.shadow.mapSize.width = 1024;
+            // light.shadow.mapSize.height = 1024;
+            // scene.add(light);
+
+            function addPlane() {
+                //首先需增加一个长方形作为承接阴影的平面
+                let platform = new THREE.Mesh(new THREE.PlaneGeometry(20, 20),
+                                    new THREE.MeshLambertMaterial({color: '#fff'}) );
+                platform.rotation.set(-Math.PI / 2, 0, 0);
+                platform.position.set(0, -3, 0);
+                platform.receiveShadow = true;
+                scene.add(platform)
+            }
+            
+			init();
+            createCube();
+            addShadow();
+            addLight();
+            addPlane();
+            /** 以下为第二节内容 光与影*/
+            
+            renderer.render(scene, camera);
+
+        </script>
+    </body>
+</html>
