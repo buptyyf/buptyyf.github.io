@@ -1,10 +1,5 @@
 # 关于光与影
 
-在 Three.js 中，能形成阴影的光源只有  与 THREE.SpotLight ；而
-相对地，能表现阴影效果的材质只有 THREE.LambertMaterial 与 THREE.PhongMaterial 。
-
----
-
 ## 一. 加光
 
 ### 1. THREE.DirectionalLight(color = "#fff", intensity = 1 )
