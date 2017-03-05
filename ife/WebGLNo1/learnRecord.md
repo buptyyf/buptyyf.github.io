@@ -8,9 +8,9 @@
 
 * camera
 
-> 使用 new THREE.PerspectiveCamera(FeildView, width/height, near, far) 用于创建一个透明的右手坐标系，
-有camera.position.set(x, y, z)方法来实现位置的移动，如果只针对某一坐标系来移动，可以使用position.x()
-或postion.y()或position.z()来实现
+> 使用 new THREE.PerspectiveCamera(fov, width/height, near, far) 用于创建一个透明的右手坐标系，fov表示视野的角度，
+使用角度值有camera.position.set(x, y, z)方法来实现位置的移动，如果只针对某一坐标系来移动，可以使用position.x()
+或postion.y()或position.z()来实现。
 
 * renderer
 
@@ -49,6 +49,7 @@ renderer.render(scene, camera)
 好啦，已经可以在页面上看见一个方块了。
 
 啊？我创建的可是正方体啊，为啥只是个正方形出来了。怎么才能让他显得有立体感啊，那就把它转一转吧！
+rotation是使用弧度制而不是角度值。
 ```javascript
 mesh.rotation.x += 1;
 mesh.rotation.y += 1;
