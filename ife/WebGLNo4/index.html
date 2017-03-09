@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>yyf WebGL No.4</title>
+        <style>
+            body { margin: 0; }
+            
+        </style>
+        <script src="../public/js/three.min.js"></script>
+        <script src="../public/js/TrackballControls.js"></script>
+        <script src="../public/js/stats.min.js"></script>
+    </head>
+    <body>
+        <script>
+            let scene, camera, renderer;
+            let controls;
+            let geometry, mesh, material;
+            let light;
+
+            function init() {
+                //创建一个场景
+                scene = new THREE.Scene();
+                // Fog 和 FogExp2 是对雾化效果，随着距离的远近显示颜色的不同 Fog是线性变化，FogExp2是指数型变化
+                // scene.fog = new THREE.FogExp2( '#cccccc', 0.002 );
+                scene.fog = new THREE.Fog( '#cccccc');
+                //创建一个正交照相机
+                // camera = new THREE.OrthographicCamera( -10, 10, 10, -10, 0.1, 1000 );
+                
+                //创建一个透视照相机
+                camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+                //设置照相机位置，以及看得方向
+                camera.position.set(7, 7, 50);
+                camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+                controls = new THREE.TrackballControls( camera );
+                // //鼠标左键的灵敏度，数值越大，转的越快
+                // controls.rotateSpeed = 1.0;
+                // //与滑轮滚动有关，值越大，空间伸缩越快，貌似使右键也平移的更快了，但是！不知道为什么有时候会卡的伸缩不了了
+                // controls.zoomSpeed = 10.2;
+
+                // controls.panSpeed = 10.8;
+
+                // controls.noZoom = true;
+                // controls.noPan = true;
+                // controls.noRotate = true;
+
+                // 停止缓动
+                // controls.staticMoving = true;
+
+                // 看源码和角度有关，但是没试验出来具体的效果
+                controls.dynamicDampingFactor = 0.1;
+
+                // controls.keys[Rotate, Zoom, Pan]，可以使键盘上的按键对应三个状态，旋转、伸缩、平面移动
+                // controls.keys = [65 /*A*/, 83 /*S*/, 68 /*D*/]
+                
+
+                renderer = new THREE.WebGLRenderer({
+                    antialias: true,   //  开启消除锯齿,默认false
+                    precision: "highp"   // 渲染精度  highp/mediump/lowp
+                });
+                //设置宽高和背景色
+                renderer.setSize( window.innerWidth, window.innerHeight );
+                renderer.setClearColor("#c9f2f2");
+                renderer.setPixelRatio( window.devicePixelRatio );
+                //插入body
+                document.body.appendChild( renderer.domElement );
+                
+
+                renderer.shadowMap.enabled = true;
+
+                controls.addEventListener( 'change', () => renderer.render(scene, camera) );
+                //renderer.shadowMap.type = THREE.PCRSoftShadowMap;
+               
+            }
+            
+            function createCube() {
+                // 锥形
+                // geometry = new THREE.CylinderGeometry( 0, 10, 30, 4, 1 );
+                geometry = new THREE.TorusGeometry(10, 3, 12, 18);
+				// 圆环
+                material =  new THREE.MeshPhongMaterial( { color:0xffffff, shading: THREE.FlatShading } );
+                for ( var i = 0; i < 500; i ++ ) {
+					mesh = new THREE.Mesh( geometry, material );
+                    mesh.castShadow = true;
+                    mesh.receiveShadow = true;
+					mesh.position.x = ( Math.random() - 0.8 ) * 1000;
+					mesh.position.y = ( Math.random() - 0.8 ) * 1000;
+					mesh.position.z = ( Math.random() - 0.8 ) * 1000;
+                    mesh.rotation.set( Math.PI / Math.random(), Math.PI / Math.random(), Math.PI / Math.random());
+					// mesh.updateMatrix();
+					// mesh.matrixAutoUpdate = false;
+					scene.add( mesh );
+				}
+            }
+            
+
+            function addLight() {
+                //加入平行光，是的模型更加立体
+                light = new THREE.DirectionalLight( 0xffffff, 1);
+                light.position.set(-3, 5, 6);
+                // light.target = bodyCube;
+                console.log(light.shadow.camera)
+                light.castShadow = true;
+                
+                light.shadow.mapSize.width = 512;  // default
+                light.shadow.mapSize.height = 512; // default
+
+                let helper = new THREE.DirectionalLightHelper( light, 1 );
+                scene.add(helper)
+                console.log(light.shadow.camera)
+                scene.add(light);
+                // 调整浏览器屏幕大小也会进行相应调整
+                window.addEventListener( 'resize', onWindowResize, false );
+                renderer.render(scene, camera)
+            }
+
+            function onWindowResize() {
+                console.log("onWindowResize")
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				controls.handleResize();
+				renderer.render(scene, camera)
+			}
+
+            function animate() {
+				requestAnimationFrame( animate );
+				controls.update();
+			}
+
+            
+			init();
+            createCube();
+            // addShadow();
+            addLight();
+            animate();
+            // addPlane();
+            
+            renderer.render(scene, camera);
+
+        </script>
+    </body>
+</html>
