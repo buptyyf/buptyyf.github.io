@@ -3,7 +3,7 @@
 一. TrackBallControls简介
 
 TrackBallControls其实是一个Three.js中的一个小类库，主要用于
-依据三种操作的而进行不同的视觉变化(`Rotate,Zoom,Pan`)，鼠标左键移动表示旋转移动，
+依据鼠标的三种操作的而进行不同的视觉变化(`Rotate,Zoom,Pan`)，鼠标左键移动表示旋转移动，
 鼠标中间的滑轮滚动表示前后伸缩移动，鼠标右键移动表示在所在平面
 进行二维移动。
 

@@ -77,8 +77,9 @@
             function createCube() {
                 // 锥形
                 // geometry = new THREE.CylinderGeometry( 0, 10, 30, 4, 1 );
+                // 圆环
                 geometry = new THREE.TorusGeometry(10, 3, 12, 18);
-				// 圆环
+				
                 material =  new THREE.MeshPhongMaterial( { color:0xffffff, shading: THREE.FlatShading } );
                 for ( var i = 0; i < 500; i ++ ) {
 					mesh = new THREE.Mesh( geometry, material );
