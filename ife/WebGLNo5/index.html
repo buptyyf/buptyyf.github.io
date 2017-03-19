@@ -1,0 +1,224 @@
+<!--做不到车辆优雅的转弯啊，放弃啦，TrackballControls.js和本题没有什么关系，只是可以用鼠标来控制视角-->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>yyf WebGL No.2</title>
+        <style>
+            body { margin: 0; }
+            
+        </style>
+        <script src="../public/js/three.min.js"></script>
+        <script src="../public/js/TrackballControls.js"></script>
+        <script src="../public/js/stats.min.js"></script>
+    </head>
+    <body>
+        <script>
+
+            let scene, camera, renderer;
+            let bodyCube, frontCube, wheels, tailCube;
+            let light;
+            let isLeftPressing = false;
+            let isRightPressing = false;
+            let isFrontPressing = false;
+            let isBehindPressing = false;
+
+            window.onload = function() {
+                // handleKeys();
+                document.onkeydown = handleKeyDown;
+                document.onkeyup = handleKeyUp;
+            }
+
+            function handleKeyDown(event)
+            {
+                // currentlyPressedKeys[event.keyCode] = true;
+                //第一种 直接判断键盘按键
+                console.log(String.fromCharCode(event.keyCode))
+                if (String.fromCharCode(event.keyCode) == "A" && !isLeftPressing && !isRightPressing) { //!isLeftPressing为了控制持续旋转  !isRightPressing为了解决长按A的过程中再按D的问题
+                    isLeftPressing = true;
+                    console.log("turn left", isLeftPressing)
+                    wheels[0].rotation.z += 1
+                    wheels[3].rotation.z += 1
+                    bodyCube.rotation.y += 1
+                } 
+                if (String.fromCharCode(event.keyCode) == "D" && !isRightPressing && !isLeftPressing) {
+                    isRightPressing = true;     
+                    console.log("turn right", isRightPressing);               
+                    wheels[0].rotation.z -= 1
+                    wheels[3].rotation.z -= 1
+                    bodyCube.rotation.y -= 1                    
+                }
+                if (String.fromCharCode(event.keyCode) == "W") {
+                    console.log("WWWWWWWWWWWWWWWWW")
+                    bodyCube.position.x += 0.1
+                    wheels.map(function(wheel) {
+                        wheel.position.x +=0.1
+                    })
+                    
+                }
+                if (String.fromCharCode(event.keyCode) == "S") {
+                    bodyCube.position.x -= 0.1
+                    wheels.map(function(wheel) {
+                        wheel.position.x -=0.1
+                    })
+                }
+            }
+            function handleKeyUp(event) {
+                // console.log("release")
+                // isPressing = false;                
+                if (String.fromCharCode(event.keyCode) == "A" && isLeftPressing) {
+                    isLeftPressing = false;                                
+                    wheels[0].rotation.z -= 1
+                    wheels[3].rotation.z -= 1
+                } else if (String.fromCharCode(event.keyCode) == "D" && isRightPressing) {
+                    isRightPressing = false;                                
+                    wheels[0].rotation.z += 1
+                    wheels[3].rotation.z += 1
+                }
+                // currentlyPressedKeys[event.keyCode] = false;
+            }
+            // function handleKeys() {
+            //     if (currentlyPressedKeys[33]) {
+            //         // Page Up
+            //         // z -= 0.05;
+            //     }
+            //     if (currentlyPressedKeys[34]) {
+            //         // Page Down
+            //         // z += 0.05;
+            //     }
+            //     if (currentlyPressedKeys[37]) {
+            //         // Left cursor key
+            //         // ySpeed -= 1;
+            //         wheels[0].rotation.y += 0.1
+            //         wheels[3].rotation.y += 0.1
+            //     }
+            //     if (currentlyPressedKeys[39]) {
+            //         // Right cursor key
+            //         wheels[0].rotation.y = 0.1
+            //         wheels[3].rotation.y += 0.1
+            //     }
+            //     if (currentlyPressedKeys[38]) {
+            //         // Up cursor key
+            //         xSpeed -= 1;
+            //     }
+            //     if (currentlyPressedKeys[40]) {
+            //         // Down cursor key
+            //         xSpeed += 1;
+            //     }
+            // }
+            
+
+            function init() {
+                //创建一个场景
+                scene = new THREE.Scene();
+                //创建一个正交照相机
+                camera = new THREE.OrthographicCamera( -10, 10, 10, -10, 0.1, 1000 );
+                //设置照相机位置，以及看得方向
+                camera.position.set(2, 2, 4);
+                camera.lookAt(new THREE.Vector3(0, 0, 0));
+                //创建一个透视照相机
+                //let camera = new THREE.PerspectiveCamera(45, 4 / 3, 1, 1000);
+                renderer = new THREE.WebGLRenderer({
+                    antialias: true,   //  开启消除锯齿,默认false
+                    precision: "highp"   // 渲染精度  highp/mediump/lowp
+                });
+                //设置宽高和背景色
+                renderer.setSize( window.innerWidth, window.innerHeight );
+                renderer.setClearColor("#c9f2f2");
+                //插入body
+                document.body.appendChild( renderer.domElement );
+
+                renderer.shadowMap.enabled = true;
+                //renderer.shadowMap.type = THREE.PCRSoftShadowMap;
+               
+            }
+            
+            function createCube() {
+                bodyCube = new THREE.Mesh(new THREE.CubeGeometry(3, 3, 3),
+                            new THREE.MeshLambertMaterial({color: '#fedd00',
+                                wireframe: false,}) );
+                scene.add(bodyCube);
+
+                // frontCube = new THREE.Mesh(new THREE.CubeGeometry(1.5, 1.5, 3),
+                //     new THREE.MeshLambertMaterial({color: '#fedd00',
+                //         wireframe: false,}) );
+                // frontCube.position.set(-2.25, -0.75, 0);
+                // scene.add(frontCube);
+
+                // tailCube = new THREE.Mesh(new THREE.CubeGeometry(2.5, 1.5, 3),
+                //     new THREE.MeshLambertMaterial({color: '#fedd00',
+                //         wireframe: false,}) );
+                // tailCube.position.set(2.75, -0.75, 0);
+                // scene.add(tailCube);
+
+                //创建四个轮子
+                wheels = [];
+                for(let i = 0; i < 4; i++) {
+                    let wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.3),
+                                    new THREE.MeshLambertMaterial({color: '#000',
+                                        wireframe: false,}) );
+                    wheel.rotation.set(-Math.PI / 2, 0, 0);
+                    wheels.push(wheel);
+                }
+                wheels[0].position.set(2, -1.5, 1.4);
+                wheels[1].position.set(-1, -1.5, 1.4);
+                wheels[2].position.set(-1, -1.5, -1.4);
+                wheels[3].position.set(2, -1.5, -1.4);
+                scene.add(wheels[0], wheels[1], wheels[2], wheels[3]);
+            }
+
+            function addShadow() {
+                //加入属性变为可成阴影的物体
+                bodyCube.castShadow = true;
+                wheels.map(function(wheel) {
+                    wheel.castShadow = true;
+                })
+                // tailCube.castShadow = true;
+                // frontCube.castShadow = true;
+            }
+            
+
+            function addLight() {
+                //加入平行光，是的模型更加立体
+                light = new THREE.DirectionalLight( 0xffffff, 1);
+                light.position.set(-3, 5, 6);
+                // light.target = bodyCube;
+                console.log(light.shadow.camera)
+                light.castShadow = true;
+                
+                light.shadow.mapSize.width = 512;  // default
+                light.shadow.mapSize.height = 512; // default
+                light.shadow.radius = 10
+                // light.shadow.camera.near = 0.5;       // default
+                // light.shadow.camera.far = 500      // default
+                // let helper = new THREE.DirectionalLightHelper( light, 1 );
+                // scene.add(helper)
+                console.log(light.shadow.camera)
+                scene.add(light);
+            }
+
+            function addPlane() {
+                //首先需增加一个长方形作为承接阴影的平面
+                let platform = new THREE.Mesh(new THREE.PlaneGeometry(20, 20),
+                                    new THREE.MeshLambertMaterial({color: '#f2f2f2'}) );
+                platform.rotation.set(-Math.PI / 2, 0, 0);
+                platform.position.set(0, -3, 0);
+                platform.receiveShadow = true;
+                scene.add(platform)
+            }
+            
+			init();
+            createCube();
+            addShadow();
+            addLight();
+            addPlane();
+            /** 以下为第二节内容 光与影*/
+            render();
+            function render() {
+                renderer.render(scene, camera);
+                requestAnimationFrame(render);
+            }
+
+        </script>
+    </body>
+</html>
